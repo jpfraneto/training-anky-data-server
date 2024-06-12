@@ -154,13 +154,20 @@ app.frame('/store-on-database/:goodReplyHash', async (c) => {
   const { goodReplyHash } = c.req.param()
   const badReplyLink = c.inputText
 
-  const goodReplyCast = await getThisCastInformationFromHash(goodReplyHash)
-  const replyParentCast = await getThisCastInformationFromHash(goodReplyCast.parent_hash)
-  const badCast =  await getThisCastInformationFromUrl(badReplyLink)
+  // Start fetching goodReplyCast and badCast in parallel
+  const goodReplyCastPromise = getThisCastInformationFromHash(goodReplyHash);
+  const badCastPromise = getThisCastInformationFromUrl(badReplyLink);
 
-  // fetch the bad reply link to neynar and store the data associated with it on the database
-  const prismaReplyId = await storeOnDatabase(replyParentCast, goodReplyCast, badCast)
-  
+  // Wait for the goodReplyCast to resolve to get the parent hash
+  const goodReplyCast = await goodReplyCastPromise;
+  const replyParentCastPromise = getThisCastInformationFromHash(goodReplyCast.parent_hash);
+
+  // Wait for all promises to resolve
+  const [replyParentCast, badCast] = await Promise.all([replyParentCastPromise, badCastPromise]);
+
+  // Store the data associated with the bad reply link on the database
+  const prismaReplyId = await storeOnDatabase(replyParentCast, goodReplyCast, badCast);
+
   return c.res({
     action: `/save-comment/${prismaReplyId}`,
     image: (
