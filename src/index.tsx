@@ -14,6 +14,7 @@ export const app = new Frog({
 app.use('/*', serveStatic({ root: './public' }))
 
 app.get('/', (c) => {
+  console.log("INSIDE THE GET BASIC ROUTE HEREEEE")
   return c.json({
     134:124
   })
