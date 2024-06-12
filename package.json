@@ -10,8 +10,10 @@
     "@hono/node-server": "^1",
     "@prisma/client": "^5.15.0",
     "axios": "^1.7.2",
+    "crypto": "^1.0.1",
     "frog": "latest",
-    "hono": "^4"
+    "hono": "^4",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",

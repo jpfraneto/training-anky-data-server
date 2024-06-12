@@ -4,6 +4,16 @@ import { Button, Frog, TextInput } from 'frog'
 import { devtools } from 'frog/dev'
 import prisma from "../lib/prismaClient"
 import axios from 'axios'
+import cron from 'node-cron';
+import { exec } from 'child_process';
+import crypto from 'crypto';
+import { checkAndUpdateRepliesScores } from '../lib/replyManager';
+import { getThisCastInformationFromHash, getThisCastInformationFromUrl } from "../lib/farcaster"
+
+
+// cron.schedule('0 * * * *', () => {
+//   checkAndUpdateRepliesScores();
+// });
 
 export const app = new Frog({
   basePath: '/'
@@ -14,7 +24,6 @@ export const app = new Frog({
 app.use('/*', serveStatic({ root: './public' }))
 
 app.get('/', (c) => {
-  console.log("INSIDE THE GET BASIC ROUTE HEREEEE")
   return c.json({
     134:124
   })
@@ -118,32 +127,7 @@ app.frame('/save-this-reply-frame/:goodReplyHash', (c) => {
   })
 })
 
-async function getThisCastInformationFromHash (castHash) {
-  try {
-    const castResponse = await axios.get(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash&viewer_fid=16098`, {
-      headers: {
-        api_key: process.env.NEYNAR_API_KEY,
-      }
-    }
-  )
-    return castResponse.data.cast
-  } catch (error) {
-    console.log("there was an error festing the cast from neynar", error)
-  }
-}
 
-async function getThisCastInformationFromUrl (castUrl) {
-  try {
-    const castResponse = await axios.get(`https://api.neynar.com/v2/farcaster/cast?identifier=${encodeURIComponent(castUrl)}&type=url&viewer_fid=16098`, {
-      headers: {
-        api_key: process.env.NEYNAR_API_KEY,
-      }
-    })
-    return castResponse.data.cast
-  } catch (error) {
-    console.log("there was an error festing the cast from neynar", castHash)
-  }
-}
 
 async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
   try {
