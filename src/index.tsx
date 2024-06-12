@@ -78,6 +78,7 @@ app.castAction(
     const { actionData } = c
     const { castId, fid, messageHash, network, timestamp, url } = actionData
     const goodReplyHash = castId.hash
+    console.log("inside the cast action, the goodreplyhash is ," ,  goodReplyHash)
     return c.res({ type: 'frame', path: `/save-this-reply-frame/${goodReplyHash}` })
   },
   { name: "save this reply", icon: "log" }
