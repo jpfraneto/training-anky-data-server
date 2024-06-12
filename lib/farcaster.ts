@@ -1,4 +1,5 @@
 import axios from 'axios'
+console.log("processss", process.env.NEYNAR_API_KEY)
 
 export  async function getThisCastInformationFromHash (castHash) {
     try {
