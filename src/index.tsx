@@ -13,6 +13,12 @@ export const app = new Frog({
 
 app.use('/*', serveStatic({ root: './public' }))
 
+app.get('/', (c) => {
+  return c.json({
+    134:124
+  })
+})
+
 // for installing the cast action
 app.frame('/install-save-this-reply', (c) => {
   return c.res({
