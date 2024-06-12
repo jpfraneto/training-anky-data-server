@@ -1,0 +1,21 @@
+{
+  "name": "training-anky-data-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "frog dev",
+    "serve": "tsx src/index.tsx"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1",
+    "@prisma/client": "^5.15.0",
+    "axios": "^1.7.2",
+    "frog": "latest",
+    "hono": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "prisma": "^5.15.0",
+    "tsx": "^3.12.2"
+  }
+}

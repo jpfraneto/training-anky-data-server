@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ReplyFromAnky {
+    id                    Int         @id @unique @default(autoincrement())
+    dayNumber             Int?
+    replyNumber           Int?
+    rootCastText          String?
+    scheduledAt           DateTime    @default(now())
+    replyingToFid         Int?
+    replyingToUsername    String?
+    replyingToCastHash    String?
+    timeOfReply           DateTime?
+    replyText             String?
+    replyReasoning        String?
+    replyCastHash         String?
+    humanTrainerFeedback  String?
+    quoteCasts            Int         @default(0)
+    recasts               Int         @default(0)
+    comments              Int         @default(0)
+    likes                 Int         @default(0)
+    engagementScore       Float       @default(0.0)
+    quoteCastHashes       String[]    @default([])
+    recastHashes          String[]    @default([])
+    commentHashes         String[]    @default([])
+    likeFids              Int[]       @default([])
+    deleted               Boolean     @default(false)
+}
+
+model DailyPerformance {
+    id                   Int        @id @unique @default(autoincrement())
+    date                 DateTime   @default(now())
+    totalReplies         Int
+    totalEngagementScore Float
+    quoteCasts           Int        @default(0)
+    recasts              Int        @default(0)
+    comments             Int        @default(0)
+    likes                Int        @default(0)
+}
+
+model ReplyForTrainingAnky {
+    id                    String   @id @default(uuid())
+    rootCastHash          String?
+    rootCastText          String?
+    goodReplyHash         String?
+    goodReplyText         String?
+    badReplyHash          String?
+    badReplyText          String?
+    comments              String?
+}
