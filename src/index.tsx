@@ -311,6 +311,18 @@ app.frame('/save-comment/:prismaId', async (c) => {
         comments: inputText
       }
     })
+    const startOfDayUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+
+    // Query the count of replyForTrainingAnky entries since the start of the day
+    const savedCastsToday = await prisma.replyForTrainingAnky.count({
+      where: {
+        addedTimestamp: {
+          gte: startOfDayUTC
+        }
+      }
+    });
+    console.log("today X casts were added: ", savedCastsToday)
+
     return c.res({
       image: (
         <div
