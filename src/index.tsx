@@ -80,22 +80,22 @@ app.frame('/install-vouch', (c) => {
   return c.res({
     image: 'https://github.com/jpfraneto/images/blob/main/vouch.png?raw=true',
     intents: [
-      <Button.AddCastAction action="https%3A%2F%2Fapi.anky.bot%2Finstall-vouch">
+      <Button.AddCastAction action="https://api.anky.bot/install-vouch">
         install $vouch
       </Button.AddCastAction>,
     ]
   })
 })
 
+// cast action trigger that displays the fram
+
 app.castAction(
   '/install-vouch',
   (c) => {
     const { actionData } = c
-    console.log("IN asdaskuhdaskjda", actionData)
-
+    console.log("the action data is: asdasd", actionData)
     const { castId, fid, messageHash, network, timestamp, url } = actionData
-    console.log("IN HERE", fid)
-    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for` })
+    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/18350` })
   },
   { name: "$vouch", icon: "log" }
 )
