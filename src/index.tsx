@@ -91,12 +91,7 @@ app.frame('/install-vouch', (c) => {
 app.castAction(
   '/install-vouch-action',
   (c) => {
-    console.log(
-      `Cast Action to ${JSON.stringify(c.actionData.castId)} from ${
-        c.actionData.fid
-      }`,
-    )
-    return c.res({ type: 'frame', path: '/vouch-for/18350' })
+    return c.res({ type: 'frame', path: `/vouch-for/${c.actionData.castId.fid}` })
   },
   { name: "$vouch", icon: "smiley" }
 ) 
