@@ -9,12 +9,16 @@ import cron from 'node-cron';
 import { exec } from 'child_process';
 import crypto from 'crypto';
 import { checkAndUpdateRepliesScores } from '../lib/replyManager';
-import { getThisCastInformationFromHash, getThisCastInformationFromUrl } from "../lib/farcaster"
+import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
+import { scrollFeedAndReply } from "../lib/anky"
 
+//deleteAll()
+// scrollFeedAndReply()
 
-// cron.schedule('0 * * * *', () => {
-//   checkAndUpdateRepliesScores();
-// });
+cron.schedule('*/30 * * * *', () => {
+  console.log("inside the scheduler function, time to scroll the feed and reply")
+  scrollFeedAndReply()
+});
 
 export const app = new Frog({
   basePath: '/'
@@ -72,6 +76,189 @@ app.frame('/install-save-this-reply', (c) => {
   })
 })
 
+app.frame('/install-vouch', (c) => {
+  return c.res({
+    image: (
+      <div
+      style={{
+          alignItems: 'center',
+          background:'linear-gradient(to right, #432889, #17101F)',
+          backgroundSize: '100% 100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}>
+                <div
+            style={{
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: "flex",
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+            }}
+            >
+            add "$VOUCH" action
+            </div>
+      </div>
+    ),
+    intents: [
+      <Button.AddCastAction action="/install-vouch">
+        install $vouch
+      </Button.AddCastAction>,
+    ]
+  })
+})
+
+// cast action trigger that displays the frame
+app.castAction(
+  '/install-vouch',
+  (c) => {
+    const { actionData } = c
+    const { castId, fid, messageHash, network, timestamp, url } = actionData
+    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${fid}` })
+  },
+  { name: "$vouch", icon: "log" }
+)
+
+// initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
+app.frame('/vouch-for/:fid', (c) => {
+  const { fid } = c.req.param()
+  return c.res({
+    action: `/vouching-for/${fid}`,
+    image: (
+      <div
+            style={{
+                  alignItems: 'center',
+                  background:'linear-gradient(to right, #432889, #17101F)',
+                  backgroundSize: '100% 100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flexWrap: 'nowrap',
+                  height: '100%',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  width: '100%',
+                }}>
+                <div
+        style={{
+          color: 'white',
+          fontSize: 50,
+          fontStyle: 'normal',
+          letterSpacing: '-0.025em',
+          lineHeight: 1,
+          display: "flex",
+          marginTop: 30,
+          padding: '0 120px',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        would you $vouch for this user?
+        </div>
+      </div>
+    ),
+
+    intents: [
+      <Button value="yes">➕ $vouch</Button>,
+      <Button value="no">➖ $vouch</Button>,
+    ]
+  })
+})
+
+// initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
+app.frame('/vouching-for/:fid', (c) => {
+  console.log("the req is: ", c)
+  let text
+  if(c.frameData?.buttonIndex == 1) {
+    text = "you $vouched for this user"
+  } else {
+    text = "you de$vouched for this user"
+  }
+  return c.res({
+    image: (
+      <div
+            style={{
+                  alignItems: 'center',
+                  background:'linear-gradient(to right, #432889, #17101F)',
+                  backgroundSize: '100% 100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flexWrap: 'nowrap',
+                  height: '100%',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  width: '100%',
+                }}>
+                <div
+        style={{
+          color: 'white',
+          fontSize: 50,
+          fontStyle: 'normal',
+          letterSpacing: '-0.025em',
+          lineHeight: 1,
+          display: "flex",
+          marginTop: 30,
+          padding: '0 120px',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {text}
+        </div>
+      </div>
+    ),
+  })
+})
+
+
+// for installing the cast action
+app.frame('/install-replyguy', (c) => {
+  return c.res({
+    image: (
+      <div
+      style={{
+          alignItems: 'center',
+          background:'linear-gradient(to right, #432889, #17101F)',
+          backgroundSize: '100% 100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}>
+                <div
+            style={{
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: "flex",
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+            }}
+            >
+            add "replyguy" action
+            </div>
+      </div>
+    ),
+    intents: [
+      <Button.AddCastAction action="/install-replyguy">
+        add
+      </Button.AddCastAction>,
+    ]
+  })
+})
+
 // cast action trigger that displays the frame
 app.castAction(
   '/save-this-reply-action',
@@ -79,10 +266,21 @@ app.castAction(
     const { actionData } = c
     const { castId, fid, messageHash, network, timestamp, url } = actionData
     const goodReplyHash = castId.hash
-    console.log("inside the cast action, the goodreplyhash is ," ,  goodReplyHash)
     return c.res({ type: 'frame', path: `https://api.anky.bot/save-this-reply-frame/${goodReplyHash}` })
   },
   { name: "save this reply", icon: "log" }
+)
+
+// cast action trigger that displays the frame
+app.castAction(
+  '/install-replyguy',
+  (c) => {
+    const { actionData } = c
+    const { castId, fid, messageHash, network, timestamp, url } = actionData
+    const goodReplyHash = castId.hash
+    return c.res({ type: 'frame', path: `https://api.anky.bot/replyguy-stats/${fid}` })
+  },
+  { name: "replyguy stats", icon: "diamond" }
 )
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
@@ -129,8 +327,6 @@ app.frame('/save-this-reply-frame/:goodReplyHash', (c) => {
   })
 })
 
-
-
 async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
   try {
     const prismaResponse = await prisma.replyForTrainingAnky.create({
@@ -143,7 +339,6 @@ async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
         badReplyText: badReplyCast.text
       }
     })
-    console.log("IN HERE, THE PRISMA RESPONSE IS: ", prismaResponse)
     return prismaResponse.id
   } catch (error) {
     console.log('there was an error adding the casts to the database')
@@ -152,6 +347,82 @@ async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
 
 app.frame('/store-on-database/:goodReplyHash', async (c) => {
   const { goodReplyHash } = c.req.param()
+  const { frameData, verified } = c
+  const { fid } = frameData
+  if(![16098, 18350].includes(fid)) {
+    console.log("in here, the fid is", fid !== 18350)
+    return c.res({
+      image: (
+        <div
+              style={{
+                    alignItems: 'center',
+                    background:'linear-gradient(to right, #432889, #17101F)',
+                    backgroundSize: '100% 100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexWrap: 'nowrap',
+                    height: '100%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    width: '100%',
+                  }}>
+                  <div
+          style={{
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: "flex",
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+               you are not authorized to use this cast action. sorry about that.
+        </div>
+        </div>
+      ),
+    })
+  }
+
+  if (!c?.inputText?.match(/^https:\/\/warpcast\.com\/[a-zA-Z0-9_-]+\/0x[0-9a-fA-F]+$/)) {
+    return c.res({
+      action: `/store-on-database/${goodReplyHash}`,
+      image: (
+        <div
+              style={{
+                    alignItems: 'center',
+                    background:'linear-gradient(to right, #432889, #17101F)',
+                    backgroundSize: '100% 100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexWrap: 'nowrap',
+                    height: '100%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    width: '100%',
+                  }}>
+                  <div
+          style={{
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: "flex",
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+        the formatting of the bad cast is not a warpcast link. please try harder, go back, copy the bad warpcast link, and call this cast action from a good reply
+        </div>
+        </div>
+      ),
+    })
+  }
+
   const badReplyLink = c.inputText
 
   // Start fetching goodReplyCast and badCast in parallel
@@ -289,6 +560,61 @@ app.frame('/save-comment/:prismaId', async (c) => {
     })
   }
 })
+
+/// REPLYGUY STATS
+app.frame('/replyguy-stats/:fid', (c) => {
+  const { fid } = c.req.param()
+  console.log("the fid is here, and the replyguy stats are")
+  return c.res({
+    // action: `/store-on-database/${goodReplyHash}`,
+    image: (
+      <div
+            style={{
+                  alignItems: 'center',
+                  background:'linear-gradient(to right, #432889, #17101F)',
+                  backgroundSize: '100% 100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flexWrap: 'nowrap',
+                  height: '100%',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  width: '100%',
+                }}>
+                <div
+        style={{
+          color: 'white',
+          height: '100%',
+          fontSize: 44,
+          fontStyle: 'normal',
+          letterSpacing: '-0.025em',
+          lineHeight: 0.5,
+          display: "flex",
+          marginTop: 30,
+          padding: '0 120px',
+          flexDirection: "column",
+        }}
+      >
+        <p>day 111</p>
+        <p>total root casts: 2</p>
+        <p>total replies: 33</p>
+        <p>quote casts: 12</p>
+        <p>comments on your replies: 33</p>
+        <p>recasts: 8</p>
+        <p>likes: 88</p>
+        <p>today score: 55.3</p>
+      </div>
+      </div>
+    ),
+
+    // intents: [
+    //   <TextInput placeholder="full warpcast url" />,
+    //   <Button value="reply">send</Button>,
+    // ]
+  })
+})
+
+
 
 const port = 3000
 console.log(`Server is running on port ${port}`)

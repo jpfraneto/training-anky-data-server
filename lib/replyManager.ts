@@ -1,5 +1,7 @@
 import prisma from "./prismaClient";
 import { getThisCastInformationFromHash } from "../lib/farcaster"
+import { replyToThisCast, castAnonymouslyWithFrame, getAnkyImage, processThisTextThroughAnky } from "./lib/anky";
+
 
 
 // Utility function to get the start of the day
@@ -24,7 +26,6 @@ export async function checkAndUpdateRepliesScores() {
             deleted: false
         }
     });
-    console.log("the todays replies are: ", todayReplies)
     for (const reply of todayReplies) {
         // Fetch cast data by hash
         const castData = await getThisCastInformationFromHash(reply && reply?.replyCastHash);
