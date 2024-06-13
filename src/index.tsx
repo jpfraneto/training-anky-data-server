@@ -91,8 +91,9 @@ app.frame('/install-vouch', (c) => {
 app.castAction(
   '/install-vouch-action',
   (c) => {
-    console.log("callind the vouch action", c.actionData)
-    return c.res({ type: 'frame', path: `/vouch-for/${c?.actionData?.castId?.fid}` })
+    console.log("callind the vouch action", c?.actionData?.castId?.fid)
+    let fid = c?.actionData?.castId?.fid || 18350
+    return c.res({ type: 'frame', path: `/vouch-for/${fid}` })
   },
   { name: "$vouch", icon: "smiley" }
 ) 
@@ -100,6 +101,7 @@ app.castAction(
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
 app.frame('/vouch-for/:fid', (c) => {
+  console.log("INSIDE THIIIIIS ROUTE")
   const { fid } = c.req.param()
   console.log("insideeeee here", fid)
   return c.res({
