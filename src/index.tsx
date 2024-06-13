@@ -15,10 +15,10 @@ import { scrollFeedAndReply } from "../lib/anky"
 //deleteAll()
 // scrollFeedAndReply()
 
-cron.schedule('*/30 * * * *', () => {
-  console.log("inside the scheduler function, time to scroll the feed and reply")
-  scrollFeedAndReply()
-});
+// cron.schedule('*/30 * * * *', () => {
+//   console.log("inside the scheduler function, time to scroll the feed and reply")
+//   scrollFeedAndReply()
+// });
 
 export const app = new Frog({
   basePath: '/'
