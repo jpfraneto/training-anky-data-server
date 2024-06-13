@@ -91,9 +91,15 @@ app.frame('/install-vouch', (c) => {
 app.castAction(
   '/install-vouch',
   (c) => {
-    const { actionData } = c
-    const { castId, fid, messageHash, network, timestamp, url } = actionData
-    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${fid}` })
+    try {
+      const { actionData } = c
+      console.log("the action data here is ", actionData)
+      const { castId, fid, messageHash, network, timestamp, url } = actionData
+      return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${fid}` })
+    } catch (error) {
+      return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/18350` })
+    }
+
   },
   { name: "$vouch", icon: "log" }
 )
