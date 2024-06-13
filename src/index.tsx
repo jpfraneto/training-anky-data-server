@@ -82,7 +82,7 @@ app.castAction(
     const { actionData } = c
     console.log("the action data is: asdasd", actionData)
     const { castId, fid, messageHash, network, timestamp, url } = actionData
-    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/18350` })
+    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${castId.fid}` })
   },
   { name: "$vouch", icon: "log" }
 )
