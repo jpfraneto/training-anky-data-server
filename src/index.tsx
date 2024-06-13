@@ -87,22 +87,17 @@ app.frame('/install-vouch', (c) => {
   })
 })
 
-// cast action trigger that displays the frame
 app.castAction(
   '/install-vouch',
   (c) => {
-    try {
-      const { actionData } = c
-      console.log("the action data here is ", actionData)
-      const { castId, fid, messageHash, network, timestamp, url } = actionData
-      return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${fid}` })
-    } catch (error) {
-      return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/18350` })
-    }
-
+    const { actionData } = c
+    console.log("the action data is: asdasd", actionData)
+    const { castId, fid, messageHash, network, timestamp, url } = actionData
+    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/18350` })
   },
   { name: "$vouch", icon: "log" }
 )
+
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
 app.frame('/vouch-for/:fid', (c) => {
