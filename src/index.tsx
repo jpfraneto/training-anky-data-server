@@ -93,7 +93,8 @@ app.castAction(
   (c) => {
     console.log("callind the vouch action", c?.actionData?.castId?.fid)
     let fid = c?.actionData?.castId?.fid || 18350
-    return c.res({ type: 'frame', path: `/vouch-for/${fid}` })
+    console.log("the fid is: ", fid)
+    return c.res({ type: 'frame', path: `https://api.anky.bot/vouch-for/${fid}` })
   },
   { name: "$vouch", icon: "smiley" }
 ) 
@@ -105,7 +106,7 @@ app.frame('/vouch-for/:fid', (c) => {
   const { fid } = c.req.param()
   console.log("insideeeee here", fid)
   return c.res({
-    action: `/vouching-for/${fid}`,
+    action: `https://api.anky.bot/vouching-for/${fid}`,
     image: (
       <div
             style={{
