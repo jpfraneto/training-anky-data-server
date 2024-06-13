@@ -160,7 +160,7 @@ app.frame('/vouch-for/:fid', (c) => {
           whiteSpace: 'pre-wrap',
         }}
       >
-        would you $vouch for this user?
+        would you $vouch for this user? (fid: {fid})
         </div>
       </div>
     ),
@@ -174,12 +174,12 @@ app.frame('/vouch-for/:fid', (c) => {
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
 app.frame('/vouching-for/:fid', (c) => {
-  console.log("the req is: ", c)
-  let text
-  if(c.frameData?.buttonIndex == 1) {
-    text = "you $vouched for this user"
+  const { fid } = c.req.param()
+  let text = "hello world"
+  if(c && c.frameData && c.frameData?.buttonIndex == 1) {
+    text = `you $vouched for ${fid}`
   } else {
-    text = "you de$vouched for this user"
+    text = `you de-$vouched for ${fid}`
   }
   return c.res({
     image: (
