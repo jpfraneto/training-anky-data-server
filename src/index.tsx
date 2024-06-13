@@ -80,7 +80,7 @@ app.frame('/install-vouch', (c) => {
   return c.res({
     image: 'https://github.com/jpfraneto/images/blob/main/vouch.png?raw=true',
     intents: [
-      <Button.AddCastAction action="/install-vouch">
+      <Button.AddCastAction action="https://api.anky.bot/install-vouch">
         install $vouch
       </Button.AddCastAction>,
     ]
