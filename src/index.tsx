@@ -304,6 +304,15 @@ app.frame('/save-comment/:prismaId', async (c) => {
   const { inputText } = c
   const startOfDayUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
 
+  // Query the count of replyForTrainingAnky entries since the start of the day
+  const savedCastsToday = await prisma.replyForTrainingAnky.count({
+    where: {
+      addedTimestamp: {
+        gte: startOfDayUTC
+      }
+    }
+  });
+  console.log("The saved casts today are ", savedCastsToday)
   if (inputText && inputText?.length > 2) {
     await prisma.replyForTrainingAnky.update({
       where: {
@@ -314,14 +323,6 @@ app.frame('/save-comment/:prismaId', async (c) => {
       }
     })
 
-        // Query the count of replyForTrainingAnky entries since the start of the day
-        const savedCastsToday = await prisma.replyForTrainingAnky.count({
-          where: {
-            addedTimestamp: {
-              gte: startOfDayUTC
-            }
-          }
-        });
 
     return c.res({
       image: (
@@ -357,14 +358,7 @@ app.frame('/save-comment/:prismaId', async (c) => {
       ),
     })
   } else {
-      // Query the count of replyForTrainingAnky entries since the start of the day
-      const savedCastsToday = await prisma.replyForTrainingAnky.findMany({
-        where: {
-          addedTimestamp: {
-            gte: startOfDayUTC
-          }
-        }
-      });
+
     return c.res({
       image: (
         <div
