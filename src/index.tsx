@@ -231,28 +231,28 @@ app.frame('/install-replyguy', (c) => {
 })
 
 // cast action trigger that displays the frame
-app.castAction(
-  '/save-this-reply-action',
-  (c) => {
-    const { actionData } = c
-    const { castId, fid, messageHash, network, timestamp, url } = actionData
-    const goodReplyHash = castId.hash
-    return c.res({ type: 'frame', path: `https://api.anky.bot/save-this-reply-frame/${goodReplyHash}` })
-  },
-  { name: "save this reply", icon: "log" }
-)
+// app.castAction(
+//   '/save-this-reply-action',
+//   (c) => {
+//     const { actionData } = c
+//     const { castId, fid, messageHash, network, timestamp, url } = actionData
+//     const goodReplyHash = castId.hash
+//     return c.res({ type: 'frame', path: `https://api.anky.bot/save-this-reply-frame/${goodReplyHash}` })
+//   },
+//   { name: "save this reply", icon: "log" }
+// )
 
-// cast action trigger that displays the frame
-app.castAction(
-  '/install-replyguy',
-  (c) => {
-    const { actionData } = c
-    const { castId, fid, messageHash, network, timestamp, url } = actionData
-    const goodReplyHash = castId.hash
-    return c.res({ type: 'frame', path: `https://api.anky.bot/replyguy-stats/${fid}` })
-  },
-  { name: "replyguy stats", icon: "diamond" }
-)
+// // cast action trigger that displays the frame
+// app.castAction(
+//   '/install-replyguy',
+//   (c) => {
+//     const { actionData } = c
+//     const { castId, fid, messageHash, network, timestamp, url } = actionData
+//     const goodReplyHash = castId.hash
+//     return c.res({ type: 'frame', path: `https://api.anky.bot/replyguy-stats/${fid}` })
+//   },
+//   { name: "replyguy stats", icon: "diamond" }
+// )
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
 app.frame('/save-this-reply-frame/:goodReplyHash', (c) => {
