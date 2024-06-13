@@ -78,37 +78,7 @@ app.frame('/install-save-this-reply', (c) => {
 
 app.frame('/install-vouch', (c) => {
   return c.res({
-    image: (
-      <div
-      style={{
-          alignItems: 'center',
-          background:'linear-gradient(to right, #432889, #17101F)',
-          backgroundSize: '100% 100%',
-          display: 'flex',
-          flexDirection: 'column',
-          flexWrap: 'nowrap',
-          height: '100%',
-          justifyContent: 'center',
-          textAlign: 'center',
-          width: '100%',
-        }}>
-                <div
-            style={{
-            color: 'white',
-            fontSize: 50,
-            fontStyle: 'normal',
-            letterSpacing: '-0.025em',
-            lineHeight: 1,
-            display: "flex",
-            marginTop: 30,
-            padding: '0 120px',
-            whiteSpace: 'pre-wrap',
-            }}
-            >
-            add "$VOUCH" action
-            </div>
-      </div>
-    ),
+    image: 'https://github.com/jpfraneto/images/blob/main/vouch.png?raw=true',
     intents: [
       <Button.AddCastAction action="/install-vouch">
         install $vouch
