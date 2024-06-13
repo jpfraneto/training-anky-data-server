@@ -46,7 +46,7 @@ model DailyPerformance {
 
 model ReplyForTrainingAnky {
     id                    String   @id @default(uuid())
-    addedTimestamp        DateTime?   @default(now())
+    addedTimestamp        DateTime   @default(now())
     rootCastHash          String?
     rootCastText          String?
     goodReplyHash         String?

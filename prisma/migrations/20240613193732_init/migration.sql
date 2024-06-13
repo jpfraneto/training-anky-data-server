@@ -1,6 +1,8 @@
 -- CreateTable
 CREATE TABLE "ReplyFromAnky" (
     "id" SERIAL NOT NULL,
+    "dayNumber" INTEGER,
+    "replyNumber" INTEGER,
     "rootCastText" TEXT,
     "scheduledAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "replyingToFid" INTEGER,
@@ -42,6 +44,7 @@ CREATE TABLE "DailyPerformance" (
 -- CreateTable
 CREATE TABLE "ReplyForTrainingAnky" (
     "id" TEXT NOT NULL,
+    "addedTimestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "rootCastHash" TEXT,
     "rootCastText" TEXT,
     "goodReplyHash" TEXT,
@@ -49,6 +52,7 @@ CREATE TABLE "ReplyForTrainingAnky" (
     "badReplyHash" TEXT,
     "badReplyText" TEXT,
     "comments" TEXT,
+    "engagementScore" TEXT,
 
     CONSTRAINT "ReplyForTrainingAnky_pkey" PRIMARY KEY ("id")
 );

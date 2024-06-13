@@ -12,7 +12,7 @@ import { checkAndUpdateRepliesScores } from '../lib/replyManager';
 import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
 import { scrollFeedAndReply } from "../lib/anky"
 
-//deleteAll()
+// deleteAll()
 // scrollFeedAndReply()
 
 // cron.schedule('*/30 * * * *', () => {
@@ -302,6 +302,9 @@ app.frame('/store-on-database/:goodReplyHash', async (c) => {
 app.frame('/save-comment/:prismaId', async (c) => {
   const { prismaId } = c.req.param()
   const { inputText } = c
+  const startOfDayUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+
+  console.log("today X casts were added: ", savedCastsToday)
   if (inputText && inputText?.length > 2) {
     await prisma.replyForTrainingAnky.update({
       where: {
@@ -311,17 +314,15 @@ app.frame('/save-comment/:prismaId', async (c) => {
         comments: inputText
       }
     })
-    const startOfDayUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
 
-    // Query the count of replyForTrainingAnky entries since the start of the day
-    const savedCastsToday = await prisma.replyForTrainingAnky.count({
-      where: {
-        addedTimestamp: {
-          gte: startOfDayUTC
-        }
-      }
-    });
-    console.log("today X casts were added: ", savedCastsToday)
+        // Query the count of replyForTrainingAnky entries since the start of the day
+        const savedCastsToday = await prisma.replyForTrainingAnky.count({
+          where: {
+            addedTimestamp: {
+              gte: startOfDayUTC
+            }
+          }
+        });
 
     return c.res({
       image: (
@@ -351,12 +352,20 @@ app.frame('/save-comment/:prismaId', async (c) => {
             whiteSpace: 'pre-wrap',
           }}
         >
-              your comment and everything was saved. keep it going. we need more data to train @anky
+              your comment and everything was saved. keep it going. we need more data to train @anky. {savedCastsToday}/100 today.
         </div>
         </div>
       ),
     })
   } else {
+      // Query the count of replyForTrainingAnky entries since the start of the day
+      const savedCastsToday = await prisma.replyForTrainingAnky.findMany({
+        where: {
+          addedTimestamp: {
+            gte: startOfDayUTC
+          }
+        }
+      });
     return c.res({
       image: (
         <div
@@ -385,7 +394,7 @@ app.frame('/save-comment/:prismaId', async (c) => {
             whiteSpace: 'pre-wrap',
           }}
         >
-               the cast triada was saved without comments. keep it going. we need more data to train @anky
+               the cast triada was saved without comments. keep it going. we need more data to train @anky.  {savedCastsToday}/100 today.
         </div>
         </div>
       ),
