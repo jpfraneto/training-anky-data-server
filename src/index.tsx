@@ -304,7 +304,6 @@ app.frame('/save-comment/:prismaId', async (c) => {
   const { inputText } = c
   const startOfDayUTC = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
 
-  console.log("today X casts were added: ", savedCastsToday)
   if (inputText && inputText?.length > 2) {
     await prisma.replyForTrainingAnky.update({
       where: {
