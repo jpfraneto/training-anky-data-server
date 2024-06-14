@@ -102,6 +102,7 @@ app.castAction(
   { name: "save this reply", icon: "log" }
 )
 
+//const randomCastHash = "0x284b1c5a35239243336178a4e015e33321423ca7"
 
 // initial frame image, which already knows the hash of the (good) reply that is being saved and the root cast hash
 app.frame('/save-this-reply-frame/:goodReplyHash', (c) => {
@@ -186,62 +187,149 @@ async function getUsersRepliesDataForToday (fid) {
 }
 
 app.frame('/store-on-database/:goodReplyHash', async (c) => {
-  if(c.buttonIndex == 2 && c?.frameData?.fid) {
-    console.log("before getting the users data", c?.frameData?.fid )
-    const userData = await getUsersRepliesDataForToday(c?.frameData?.fid);
-    console.log("the users data is: ", userData)
-    return c.res({
-      // action: `/store-on-database/${goodReplyHash}`,
-      image: (
-        <div
+  try {
+    if(c.buttonIndex == 2 && c?.frameData?.fid) {
+      const userData = await getUsersRepliesDataForToday(c?.frameData?.fid);
+      return c.res({
+        // action: `/store-on-database/${goodReplyHash}`,
+        image: (
+          <div
+                style={{
+                      alignItems: 'center',
+                      background:'linear-gradient(to right, #432889, #17101F)',
+                      backgroundSize: '100% 100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      flexWrap: 'nowrap',
+                      height: '100%',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      width: '100%',
+                    }}>
+                    <div
+            style={{
+              color: 'white',
+              height: '100%',
+              fontSize: 44,
+              fontStyle: 'normal',
+              letterSpacing: '-0.025em',
+              lineHeight: 0.5,
+              display: "flex",
+              marginTop: 30,
+              padding: '0 120px',
+              flexDirection: "column",
+            }}
+          >
+            <p>day X</p>
+            <p>total root casts: {userData?.totalRootCasts}</p>
+            <p>total replies: {userData?.totalReplies}</p>
+            <p>quote casts: {userData?.quoteCasts}</p>
+            <p>comments on your replies: {userData?.commentsOnUserReplies}</p>
+            <p>recasts: {userData?.recastsOfReplies}</p>
+            <p>likes: {userData?.likesOnUserReplies}</p>
+            <p>today score: {userData?.todayReplyScore}</p>
+          </div>
+          </div>
+        ),
+        intents: [
+          <Button.Link href="share my stats">send</Button.Link>,
+        ]
+      })
+    } else {
+      const { goodReplyHash } = c.req.param()
+      const { frameData, verified } = c
+      const fid = c?.frameData?.fid || 18350
+      if(![16098, 18350].includes(fid)) {
+        return c.res({
+          image: (
+            <div
+                  style={{
+                        alignItems: 'center',
+                        background:'linear-gradient(to right, #432889, #17101F)',
+                        backgroundSize: '100% 100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexWrap: 'nowrap',
+                        height: '100%',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        width: '100%',
+                      }}>
+                      <div
               style={{
-                    alignItems: 'center',
-                    background:'linear-gradient(to right, #432889, #17101F)',
-                    backgroundSize: '100% 100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexWrap: 'nowrap',
-                    height: '100%',
-                    justifyContent: 'center',
-                    textAlign: 'center',
-                    width: '100%',
-                  }}>
-                  <div
-          style={{
-            color: 'white',
-            height: '100%',
-            fontSize: 44,
-            fontStyle: 'normal',
-            letterSpacing: '-0.025em',
-            lineHeight: 0.5,
-            display: "flex",
-            marginTop: 30,
-            padding: '0 120px',
-            flexDirection: "column",
-          }}
-        >
-          <p>day X</p>
-          <p>total root casts: {userData?.totalRootCasts}</p>
-          <p>total replies: {userData?.totalReplies}</p>
-          <p>quote casts: {userData?.quoteCasts}</p>
-          <p>comments on your replies: {userData?.commentsOnUserReplies}</p>
-          <p>recasts: {userData?.recastsOfReplies}</p>
-          <p>likes: {userData?.likesOnUserReplies}</p>
-          <p>today score: {userData?.todayReplyScore}</p>
-        </div>
-        </div>
-      ),
-      intents: [
-        <Button.Link href="share my stats">send</Button.Link>,
-      ]
-    })
-  } else {
-    const { goodReplyHash } = c.req.param()
-    console.log("The c is" , c)
-    const { frameData, verified } = c
-    const { fid } = frameData
-    if(![16098, 18350].includes(fid)) {
+                color: 'white',
+                fontSize: 50,
+                fontStyle: 'normal',
+                letterSpacing: '-0.025em',
+                lineHeight: 1,
+                display: "flex",
+                marginTop: 30,
+                padding: '0 120px',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+                   you are not authorized to use this cast action. sorry about that.
+            </div>
+            </div>
+          ),
+        })
+      }
+    
+      if (!c?.inputText?.match(/^https:\/\/warpcast\.com\/[a-zA-Z0-9_-]+\/0x[0-9a-fA-F]+$/)) {
+        return c.res({
+          action: `/store-on-database/${goodReplyHash}`,
+          image: (
+            <div
+                  style={{
+                        alignItems: 'center',
+                        background:'linear-gradient(to right, #432889, #17101F)',
+                        backgroundSize: '100% 100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexWrap: 'nowrap',
+                        height: '100%',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        width: '100%',
+                      }}>
+                      <div
+              style={{
+                color: 'white',
+                fontSize: 50,
+                fontStyle: 'normal',
+                letterSpacing: '-0.025em',
+                lineHeight: 1,
+                display: "flex",
+                marginTop: 30,
+                padding: '0 120px',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+            the formatting of the bad cast is not a warpcast link. please try harder, go back, copy the bad warpcast link, and call this cast action from a good reply
+            </div>
+            </div>
+          ),
+        })
+      }
+    
+      const badReplyLink = c.inputText
+    
+      // Start fetching goodReplyCast and badCast in parallel
+      const goodReplyCastPromise = getThisCastInformationFromHash(goodReplyHash);
+      const badCastPromise = getThisCastInformationFromUrl(badReplyLink);
+    
+      // Wait for the goodReplyCast to resolve to get the parent hash
+      const goodReplyCast = await goodReplyCastPromise;
+      const replyParentCastPromise = getThisCastInformationFromHash(goodReplyCast.parent_hash);
+    
+      // Wait for all promises to resolve
+      const [replyParentCast, badCast] = await Promise.all([replyParentCastPromise, badCastPromise]);
+    
+      // Store the data associated with the bad reply link on the database
+      const prismaReplyId = await storeOnDatabase(replyParentCast, goodReplyCast, badCast);
+    
       return c.res({
+        action: `/save-comment/${prismaReplyId}`,
         image: (
           <div
                 style={{
@@ -269,68 +357,19 @@ app.frame('/store-on-database/:goodReplyHash', async (c) => {
               whiteSpace: 'pre-wrap',
             }}
           >
-                 you are not authorized to use this cast action. sorry about that.
+                 are there any comments that you want to save associated with this?
           </div>
           </div>
         ),
+        intents: [
+          <TextInput placeholder="add comment..." />,
+          <Button value="add-comment">save</Button>,
+        ],
       })
     }
-  
-    if (!c?.inputText?.match(/^https:\/\/warpcast\.com\/[a-zA-Z0-9_-]+\/0x[0-9a-fA-F]+$/)) {
-      return c.res({
-        action: `/store-on-database/${goodReplyHash}`,
-        image: (
-          <div
-                style={{
-                      alignItems: 'center',
-                      background:'linear-gradient(to right, #432889, #17101F)',
-                      backgroundSize: '100% 100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      flexWrap: 'nowrap',
-                      height: '100%',
-                      justifyContent: 'center',
-                      textAlign: 'center',
-                      width: '100%',
-                    }}>
-                    <div
-            style={{
-              color: 'white',
-              fontSize: 50,
-              fontStyle: 'normal',
-              letterSpacing: '-0.025em',
-              lineHeight: 1,
-              display: "flex",
-              marginTop: 30,
-              padding: '0 120px',
-              whiteSpace: 'pre-wrap',
-            }}
-          >
-          the formatting of the bad cast is not a warpcast link. please try harder, go back, copy the bad warpcast link, and call this cast action from a good reply
-          </div>
-          </div>
-        ),
-      })
-    }
-  
-    const badReplyLink = c.inputText
-  
-    // Start fetching goodReplyCast and badCast in parallel
-    const goodReplyCastPromise = getThisCastInformationFromHash(goodReplyHash);
-    const badCastPromise = getThisCastInformationFromUrl(badReplyLink);
-  
-    // Wait for the goodReplyCast to resolve to get the parent hash
-    const goodReplyCast = await goodReplyCastPromise;
-    const replyParentCastPromise = getThisCastInformationFromHash(goodReplyCast.parent_hash);
-  
-    // Wait for all promises to resolve
-    const [replyParentCast, badCast] = await Promise.all([replyParentCastPromise, badCastPromise]);
-  
-    // Store the data associated with the bad reply link on the database
-    const prismaReplyId = await storeOnDatabase(replyParentCast, goodReplyCast, badCast);
-  
+  } catch (error) {
     return c.res({
-      action: `/save-comment/${prismaReplyId}`,
+
       image: (
         <div
               style={{
@@ -358,16 +397,14 @@ app.frame('/store-on-database/:goodReplyHash', async (c) => {
             whiteSpace: 'pre-wrap',
           }}
         >
-               are there any comments that you want to save associated with this?
+               there was an error here
         </div>
         </div>
       ),
-      intents: [
-        <TextInput placeholder="add comment..." />,
-        <Button value="add-comment">save</Button>,
-      ],
+ 
     })
   }
+ 
 })
 
 app.frame('/save-comment/:prismaId', async (c) => {
