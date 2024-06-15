@@ -213,7 +213,7 @@ app.frame("/winner", (c) => {
 
 app.frame('/open-box', async (c) => {
   const winner = c.buttonValue
-  if(winner == c?.frameData?.fid){
+  if(winner == c?.frameData?.fid.toString() ){
     return c.res({
       action: `/vote-pepe`,
       image: (
@@ -256,47 +256,92 @@ app.frame('/open-box', async (c) => {
       ),
     })
   } else {
-    return c.res({
-      action: `/vote-pepe`,
-      image: (
-        <div
-        style={{
-          position: 'relative',
-          alignItems: 'center',
-          background: 'linear-gradient(to right, #432889, #17101F)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          flexWrap: 'nowrap',
-          height: '100%',
-          justifyContent: 'center',
-          textAlign: 'center',
-          width: '100%',
-        }}
-      >
-        <div
+    if (c?.frameData?.fid.toString() == '327165') {
+      return c.res({
+        action: `/vote-pepe`,
+        image: (
+          <div
           style={{
             position: 'relative',
-            zIndex: 2,
-            color: 'white',
-            fontSize: 33,
-            fontStyle: 'normal',
-            letterSpacing: '-0.025em',
-            lineHeight: 1,
+            alignItems: 'center',
+            background: 'linear-gradient(to right, #432889, #17101F)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             display: 'flex',
-            marginTop: 30,
-            padding: '10px 20px',
-            width: '80%',
-            whiteSpace: 'pre-wrap',
-            background: 'rgba(0, 0, 0, 0.5)',
+            flexDirection: 'column',
+            flexWrap: 'nowrap',
+            height: '100%',
+            justifyContent: 'center',
+            textAlign: 'center',
+            width: '100%',
           }}
         >
-          you didnt win. try again next time.
-          </div>
-      </div>
-      ),
-    })
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              color: 'white',
+              fontSize: 33,
+              fontStyle: 'normal',
+              letterSpacing: '-0.025em',
+              lineHeight: 1,
+              display: 'flex',
+              marginTop: 30,
+              padding: '10px 20px',
+              width: '80%',
+              whiteSpace: 'pre-wrap',
+              background: 'rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            {process.env.WINNER_2_WALLET_MNEMONIC}
+            </div>
+        </div>
+        ),
+      })
+    } else {
+      return c.res({
+        action: `/vote-pepe`,
+        image: (
+          <div
+          style={{
+            position: 'relative',
+            alignItems: 'center',
+            background: 'linear-gradient(to right, #432889, #17101F)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            flexWrap: 'nowrap',
+            height: '100%',
+            justifyContent: 'center',
+            textAlign: 'center',
+            width: '100%',
+          }}
+        >
+          <div
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              color: 'white',
+              fontSize: 33,
+              fontStyle: 'normal',
+              letterSpacing: '-0.025em',
+              lineHeight: 1,
+              display: 'flex',
+              marginTop: 30,
+              padding: '10px 20px',
+              width: '80%',
+              whiteSpace: 'pre-wrap',
+              background: 'rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            you didnt win. try again next time.
+            </div>
+        </div>
+        ),
+      })
+    }
+    
   }
 })
 
