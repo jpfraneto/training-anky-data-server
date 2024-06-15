@@ -16,7 +16,7 @@ import { scrollFeedAndReply } from "../lib/anky"
 // deleteAll()
 // scrollFeedAndReply()
 
-// getTheHighestVotedPepeAndAirdrop()
+getTheHighestVotedPepeAndAirdrop()
 
 async function getTheHighestVotedPepeAndAirdrop() {
   try {
@@ -62,7 +62,7 @@ async function getTheHighestVotedPepeAndAirdrop() {
 
 
     console.log("chosssssen User:", chosenCandidateArray[0]);
-    replyToThisCastWithWinningFrame(chosenCandidateArray[0])
+    // replyToThisCastWithWinningFrame(chosenCandidateArray[0])
   } catch (error) {
     console.error("Error in getTheHighestVotedPepeAndAirdrop:", error);
   }
@@ -195,13 +195,12 @@ app.frame("/pepe", (c) => {
 
 app.frame("/winner", (c) => {
   try {
-    console.log("inside this routeeeeee")
 
     return c.res({
       action: `/open-box`,
       image: 'https://github.com/jpfraneto/images/blob/main/pepito.jpeg?raw=true',
       intents: [
-        <Button value="18350">open box</Button>,
+        <Button value="432789">open box</Button>,
       ]
     })
   } catch (error) {
@@ -257,12 +256,46 @@ app.frame('/open-box', async (c) => {
       ),
     })
   } else {
-    let newCastText = `will you win?\n\nthere is only one way to find out:`
     return c.res({
-      image: 'https://github.com/jpfraneto/images/blob/main/pepepito.png?raw=true',
-      intents: [
-        <Button.Link href={`https://warpcast.com/~/compose?text=${encodeURIComponent(newCastText)}&embeds[]=https://api.anky.bot/winner`}>share frame</Button.Link>
-      ]
+      action: `/vote-pepe`,
+      image: (
+        <div
+        style={{
+          position: 'relative',
+          alignItems: 'center',
+          background: 'linear-gradient(to right, #432889, #17101F)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            color: 'white',
+            fontSize: 33,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: 'flex',
+            marginTop: 30,
+            padding: '10px 20px',
+            width: '80%',
+            whiteSpace: 'pre-wrap',
+            background: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          you didnt win. try again next time.
+          </div>
+      </div>
+      ),
     })
   }
 })
