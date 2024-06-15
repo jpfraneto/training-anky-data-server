@@ -127,7 +127,8 @@ async function replyToThisCastWithWinningFrame (winner) {
 
 export const app = new Frog({
   basePath: '/',
-  imageAspectRatio: '1:1'
+  imageAspectRatio: '1:1',
+  imageOptions: { width: 600, height: 600 },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 })
@@ -149,28 +150,28 @@ app.get('/user-casted', async (c) => {
 
 let candidates = [
   {
-    fname: "jpfraneto",
-    fid: '16098',
-    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/7813fdf8-ad67-4c38-128a-f34fad3eb600/original",
-    castUrl: ""
+    fname: "atcamo",
+    fid: '432789',
+    pepeImageUrl: "https://github.com/jpfraneto/images/blob/main/atacamo.jpeg?raw=true",
+    castUrl: "https://warpcast.com/atcamo/0xc07b8ad1"
   },
   {
-    fname: "anky.eth",
-    fid: '18350',
-    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/d582ce66-abec-48ec-ac79-14713cb1f300/original",
-    castUrl: ""
+    fname: "tyga",
+    fid: '210436',
+    pepeImageUrl: "https://github.com/jpfraneto/images/blob/main/tyga.jpeg?raw=true",
+    castUrl: "https://warpcast.com/tyga/0xc894fa4a"
   },
   {
-    fname: "schmrdty.eth",
-    fid: '213310',
-    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3d35f087-970a-4f14-e3d1-0235d1ce1d00/original",
-    castUrl: ""
+    fname: "agrislis.eth",
+    fid: '6906',
+    pepeImageUrl: "https://github.com/jpfraneto/images/blob/main/artyom.jpeg?raw=true",
+    castUrl: "https://warpcast.com/agrislis.eth/0xa75a18b6"
   },
   {
     fname: "nicolasdavis.eth",
     fid: '327165',
-    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/19d47338-be9c-4ecf-ac05-30dec39cde00/original",
-    castUrl: ""
+    pepeImageUrl: "https://github.com/jpfraneto/images/blob/main/nicolas.jpeg?raw=true",
+    castUrl: "https://warpcast.com/nicolasdavis.eth/0xa8f83fa3"
   }
 ]
 
@@ -265,27 +266,27 @@ app.image('/img', (c) => {
         style={{
           display: 'flex',
           flexWrap: 'wrap',
-          height: '100%',
-          width: '100%',
+          height: '600px', // Set a fixed size for the main container
+          width: '600px',  // Set a fixed size for the main container
         }}
       >
         {candidates.map(candidate => (
           <div 
             key={candidate.fid} 
             style={{ 
-              width: '50%', 
-              height: '50%', 
+              width: '300px', 
+              height: '300px', 
               position: 'relative', 
               backgroundImage: `url(${candidate.pepeImageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              display: 'flex'
+              display: "flex"
             }}
           >
             <div
               style={{
-                width: '100%',
+                width: '300px',
                 position: "absolute",
                 bottom: "0",
                 textAlign: 'center',
@@ -293,7 +294,6 @@ app.image('/img', (c) => {
                 background: 'rgba(0, 0, 0, 0.5)',
                 padding: '10px 0',
                 margin: '0 auto'
-
               }}
             >
               {candidate.fname}
@@ -304,6 +304,7 @@ app.image('/img', (c) => {
     )
   });
 });
+
 
 
 app.image('/error-img', (c) => {
@@ -347,9 +348,7 @@ app.image('/error-img', (c) => {
 });
 
 app.frame("/vote-pepe", async (c) => {
-  try {
-    let totalVotes = 123;
-    let degenRemaining = 888;
+  try {    
     const userVote = c.buttonIndex
     const votedFor = c.buttonValue
     const votedCandidate = candidates.filter(x=> x?.fname == votedFor)
@@ -368,9 +367,9 @@ app.frame("/vote-pepe", async (c) => {
       }
     });
 
-    totalVotes = await prisma.userVote.count();
-
-    let newCastText = `i joined ${totalVotes} other users (bots included) and voted for the best pepe of today on this frame. do the same and earn 88 a $degen tip. \n\n hurry up! \n\n only ${degenRemaining} $degen is left for being tipped.`
+    let totalVotes = await prisma.userVote.count();
+    let degenRemaining = 14476 - totalVotes * 88;
+    let newCastText = `i joined ${totalVotes} other users (bots included) and voted for the best pepe on this frame. do the same and earn 88 a $degen tip. \n\n hurry up! \n\n only ${degenRemaining} $degen is left for being tipped.\n\ncc: @jpfraneto`
     return c.res({
       action: `/vote-pepe`,
       image: (
@@ -396,14 +395,14 @@ app.frame("/vote-pepe", async (c) => {
             position: 'relative',
             zIndex: 2,
             color: 'white',
-            fontSize: 50,
+            fontSize: 39,
             fontStyle: 'normal',
             letterSpacing: '-0.025em',
             lineHeight: 1,
             display: 'flex',
             marginTop: 30,
             padding: '10px 20px',
-            width: '50%',
+            width: '80%',
             whiteSpace: 'pre-wrap',
             background: 'rgba(0, 0, 0, 0.5)',
           }}
