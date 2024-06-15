@@ -7,6 +7,7 @@ import prisma from "../lib/prismaClient"
 import axios from 'axios'
 import cron from 'node-cron';
 import { exec } from 'child_process';
+import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import { checkAndUpdateRepliesScores } from '../lib/replyManager';
 import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
@@ -15,13 +16,118 @@ import { scrollFeedAndReply } from "../lib/anky"
 // deleteAll()
 // scrollFeedAndReply()
 
+// getTheHighestVotedPepeAndAirdrop()
+
+async function getTheHighestVotedPepeAndAirdrop() {
+  try {
+    console.log("the highest voted pepe is: ")
+    // Query the votes and group by candidate
+    const votes = await prisma.userVote.groupBy({
+      by: ['candidate'],
+      _count: {
+        candidate: true,
+      },
+      orderBy: {
+        _count: {
+          candidate: 'desc',
+        },
+      },
+    });
+
+    if (votes.length === 0) {
+      console.log("No votes found");
+      return;
+    }
+    console.log("the votes are", votes)
+    // Find the highest vote count
+    const highestVoteCount = votes[0]._count.candidate;
+    console.log("the highest vote count is: ", highestVoteCount)
+    // Filter candidates with the highest vote count
+    const topCandidates = votes.filter(vote => vote._count.candidate === highestVoteCount);
+    console.log("the topCandidates vote count is: ", topCandidates)
+
+    // Select one candidate randomly if there is a tie
+    const selectedCandidate = topCandidates[Math.floor(Math.random() * topCandidates.length)];
+    console.log("the selectedCandidate vote count is: ", selectedCandidate)
+
+    // Find the user associated with the selected candidate
+    const user = await prisma.userVote.findUnique({
+      where: {
+        fid: selectedCandidate.candidate,
+      },
+    });
+    console.log("the user vote count is: ", user)
+
+    const chosenCandidateArray = candidates.filter(x=> x.fid == user.fid)
+
+
+    console.log("chosssssen User:", chosenCandidateArray[0]);
+    replyToThisCastWithWinningFrame(chosenCandidateArray[0])
+  } catch (error) {
+    console.error("Error in getTheHighestVotedPepeAndAirdrop:", error);
+  }
+}
+
+async function replyToThisCastWithWinningFrame (winner) {
+  try {
+    console.log("THE WINNER IS....", winner)
+    const options = {
+      method: 'POST',
+      url: 'https://api.neynar.com/v2/farcaster/cast',
+      headers: {
+        accept: 'application/json',
+        api_key: process.env.NEYNAR_API_KEY,
+        'content-type': 'application/json'
+      },
+      data: {
+        parent_author_fid: winner.fid,
+        signer_uuid: process.env.JPFRANETO_SIGNER,
+        text: 'you WON the pepe contest\n\ncongratulations\n\nopen the box\n\nand let the magic flow',
+        embeds: [{url: 'https://api.anky.bot/winner'}],
+        parent: 'https://warpcast.com/anky.eth/0x9f579d74'
+      }
+    };
+    axios
+  .request(options)
+  .then(function (response) {
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.neynar.com/v2/farcaster/cast',
+      headers: {
+        accept: 'application/json',
+        api_key: process.env.NEYNAR_API_KEY,
+        'content-type': 'application/json'
+      },
+      data: {
+        signer_uuid: process.env.JPFRANETO_SIGNER,
+        text: 'and the winner pepe isssssssssss\n\nyour cast was commented with a frame\n\nonly you can open that frame\n\ninside it there is a seedphrase\n\ninside that wallet there is a gift\n\nthank you',
+        channel_id: 'degen',
+        embeds: [{url: winner.castUrl}]
+      }
+    };
+    axios
+  .request(options)
+  .then(function (response) {
+    console.log(response.data);
+  })
+  })
+  .catch(function (error) {
+    console.error(error);
+  });
+  } catch (error) {
+    console.log("there was an error casting the winner frame")
+  }
+}
+
 // cron.schedule('*/30 * * * *', () => {
 //   console.log("inside the scheduler function, time to scroll the feed and reply")
 //   scrollFeedAndReply()
 // });
 
 export const app = new Frog({
-  basePath: '/'
+  basePath: '/',
+  imageAspectRatio: '1:1'
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 })
@@ -33,6 +139,292 @@ app.get('/', (c) => {
     134:124
   })
 })
+
+app.get('/user-casted', async (c) => {
+  console.log("the webhook was triggered", c)
+  return c.json({
+    134:124
+  })
+})
+
+let candidates = [
+  {
+    fname: "jpfraneto",
+    fid: '16098',
+    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/7813fdf8-ad67-4c38-128a-f34fad3eb600/original",
+    castUrl: ""
+  },
+  {
+    fname: "anky.eth",
+    fid: '18350',
+    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/d582ce66-abec-48ec-ac79-14713cb1f300/original",
+    castUrl: ""
+  },
+  {
+    fname: "schmrdty.eth",
+    fid: '213310',
+    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3d35f087-970a-4f14-e3d1-0235d1ce1d00/original",
+    castUrl: ""
+  },
+  {
+    fname: "nicolasdavis.eth",
+    fid: '327165',
+    pepeImageUrl: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/19d47338-be9c-4ecf-ac05-30dec39cde00/original",
+    castUrl: ""
+  }
+]
+
+app.frame("/pepe", (c) => {
+  try {
+    let totalVotes = 123;
+    return c.res({
+      action: `/vote-pepe`,
+      image: '/img',
+      intents: candidates.map(candidate => (
+        <Button value={candidate.fname}>@{candidate.fname}</Button>
+      ))
+    })
+  } catch (error) {
+    console.log("There was an error")
+    return c.res({
+      image: '/error-img'
+    })
+  }
+});
+
+app.frame("/winner", (c) => {
+  try {
+    console.log("inside this routeeeeee")
+    return c.res({
+      action: `/open-box`,
+      image: 'https://github.com/jpfraneto/images/blob/main/pepito.jpeg?raw=true',
+      intents: [
+        <Button value="open">open box</Button>,
+      ]
+    })
+  } catch (error) {
+    console.log("There was an error")
+    return c.res({
+      image: '/error-img'
+    })
+  }
+});
+
+app.frame('/open-box', async (c) => {
+  console.log("inside the open box route")
+  return c.res({
+    action: `/vote-pepe`,
+    image: (
+      <div
+      style={{
+        position: 'relative',
+        alignItems: 'center',
+        background: 'linear-gradient(to right, #432889, #17101F)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'nowrap',
+        height: '100%',
+        justifyContent: 'center',
+        textAlign: 'center',
+        width: '100%',
+      }}
+    >
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          color: 'white',
+          fontSize: 50,
+          fontStyle: 'normal',
+          letterSpacing: '-0.025em',
+          lineHeight: 1,
+          display: 'flex',
+          marginTop: 30,
+          padding: '10px 20px',
+          width: '50%',
+          whiteSpace: 'pre-wrap',
+          background: 'rgba(0, 0, 0, 0.5)',
+        }}
+      >
+        {process.env.WINNER_WALLET_MNEMONIC}
+        </div>
+    </div>
+    ),
+  })
+})
+
+app.image('/img', (c) => {
+  return c.res({
+    headers: {
+        'Cache-Control': 'max-age=0'
+    },
+    image: (
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          height: '100%',
+          width: '100%',
+        }}
+      >
+        {candidates.map(candidate => (
+          <div 
+            key={candidate.fid} 
+            style={{ 
+              width: '50%', 
+              height: '50%', 
+              position: 'relative', 
+              backgroundImage: `url(${candidate.pepeImageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              display: 'flex'
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                position: "absolute",
+                bottom: "0",
+                textAlign: 'center',
+                color: 'white',
+                background: 'rgba(0, 0, 0, 0.5)',
+                padding: '10px 0',
+                margin: '0 auto'
+
+              }}
+            >
+              {candidate.fname}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  });
+});
+
+
+app.image('/error-img', (c) => {
+  return c.res({
+    headers: {
+        'Cache-Control': 'max-age=0'
+    },
+    image: (
+      <div
+        style={{
+          alignItems: 'center',
+          background: 'linear-gradient(to right, #432889, #17101F)',
+          backgroundSize: '100% 100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: "flex",
+            marginTop: 30,
+            padding: '0 120px',
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          there was an error, try refreshing the frame
+        </div>
+      </div>
+    )
+  });
+});
+
+app.frame("/vote-pepe", async (c) => {
+  try {
+    let totalVotes = 123;
+    let degenRemaining = 888;
+    const userVote = c.buttonIndex
+    const votedFor = c.buttonValue
+    const votedCandidate = candidates.filter(x=> x?.fname == votedFor)
+
+    const userFid = c?.frameData?.fid.toString();
+    const userHash = uuidv4(); // Generate a unique hash for the user
+
+    // Upsert the vote in the database
+    await prisma.userVote.upsert({
+      where: { fid: userFid },
+      update: { candidate: votedFor, updatedAt: new Date() },
+      create: {
+        fid: userFid,
+        hash: userHash,
+        candidate: votedCandidate[0].fid
+      }
+    });
+
+    totalVotes = await prisma.userVote.count();
+
+    let newCastText = `i joined ${totalVotes} other users (bots included) and voted for the best pepe of today on this frame. do the same and earn 88 a $degen tip. \n\n hurry up! \n\n only ${degenRemaining} $degen is left for being tipped.`
+    return c.res({
+      action: `/vote-pepe`,
+      image: (
+        <div
+        style={{
+          position: 'relative',
+          alignItems: 'center',
+          background: 'linear-gradient(to right, #432889, #17101F)',
+          backgroundImage: `url(${votedCandidate[0].pepeImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          height: '100%',
+          justifyContent: 'center',
+          textAlign: 'center',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            color: 'white',
+            fontSize: 50,
+            fontStyle: 'normal',
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            display: 'flex',
+            marginTop: 30,
+            padding: '10px 20px',
+            width: '50%',
+            whiteSpace: 'pre-wrap',
+            background: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          You voted for {votedFor}'s pepe. Share this frame to have others vote and win a nice 88 $degen tip. hurry up! the tip jar is not infinite.
+        </div>
+      </div>
+      ),
+
+
+      intents: [
+        <Button.Link href={`https://warpcast.com/~/compose?text=${encodeURIComponent(newCastText)}&embeds[]=https://api.anky.bot/pepe`}>cast frame</Button.Link>
+      ]
+    })
+  } catch (error) {
+    console.log("there was an error here", error)
+    return c.res({
+      image: '/error-img'
+    })
+  }
+});
 
 // for installing the cast action
 app.frame('/install-save-this-reply', (c) => {

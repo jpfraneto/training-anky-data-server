@@ -56,3 +56,12 @@ model ReplyForTrainingAnky {
     comments              String?
     engagementScore       String?
 }
+
+
+model UserVote {
+  fid        String   @id
+  hash       String   @unique
+  candidate  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
