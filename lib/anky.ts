@@ -28,7 +28,7 @@ export async function scrollFeedAndReply() {
         }
       })
       console.log("inside the scroll feed and reply, the casted today is: ", castedToday)
-      const poiesisResponse = await axios.get(`${process.env.POIESIS_API_ROUTE}/scroll-feed-and-reply?totalCastedToday=${castedToday}`,
+      const poiesisResponse = await axios.get(`${process.env.POIESIS_API_ROUTE}/scroll-feed-and-reply?totalRepliesToday=${castedToday}`,
           {
               headers: {
                   'Authorization': `Bearer ${process.env.POIESIS_API_KEY}`
