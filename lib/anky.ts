@@ -1,5 +1,13 @@
 import axios from 'axios'
 
+export async function getOldRepliesAndProcessThem () {
+  try {
+    console.log("time to get all the >8 hrs replies and process them into a happening")
+  } catch (error) {
+    console.log("there was an error on the getOldRepliesAndProcessThem function", error)
+  }
+}
+
 export async function scrollFeedAndReply() {
     try {
         console.log("gonna do some scrolling rn");

@@ -8,10 +8,11 @@ import axios from 'axios'
 import cron from 'node-cron';
 import { exec } from 'child_process';
 import { v4 as uuidv4 } from 'uuid';
+import { createHmac } from "crypto";
 import crypto from 'crypto';
 import { checkAndUpdateRepliesScores } from '../lib/replyManager';
 import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
-import { scrollFeedAndReply } from "../lib/anky"
+import { scrollFeedAndReply, getOldRepliesAndProcessThem } from "../lib/anky"
 
 // deleteAll()
 // scrollFeedAndReply()
@@ -20,6 +21,7 @@ import { scrollFeedAndReply } from "../lib/anky"
 cron.schedule('*/30 * * * *', () => {
   console.log("inside the scheduler function, time to scroll the feed and reply")
   scrollFeedAndReply()
+  getOldRepliesAndProcessThem()
 });
 
 export const app = new Frog({
@@ -38,11 +40,33 @@ app.get('/', (c) => {
   })
 })
 
-app.get('/user-casted', async (c) => {
-  console.log("the webhook was triggered", c)
-  return c.json({
-    134:124
-  })
+app.post("/jpfraneto-replied", async (c) => {
+  console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
+  const body = await c.req.text();
+
+  const sig = c.req.headers.get("X-Neynar-Signature");
+  if (!sig) {
+    return c.text('Neynar signature missing from request headers', 400);
+  }
+
+  const webhookSecret = process.env.NEYNAR_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    return c.text('Make sure you set NEYNAR_WEBHOOK_SECRET in your .env file', 500);
+  }
+
+  const hmac = createHmac('sha512', webhookSecret);
+  hmac.update(body);
+
+  const generatedSignature = hmac.digest('hex');
+
+  const isValid = generatedSignature === sig;
+  if (!isValid) {
+    return c.text('Invalid webhook signature', 401);
+  }
+
+  const hookData = JSON.parse(body);
+
+  console.log("INSIDE THE WEEBHOOK THAT WAS FIRED BECAUSE JPFRANETO REPLIED TO A CAST", c)
 })
 
 // for installing the cast action
