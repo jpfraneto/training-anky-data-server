@@ -27,15 +27,15 @@ export async function scrollFeedAndReply() {
           dayNumber: 78
         }
       })
-      console.log("The casted today is: ", castedToday)
-      return
-        const poiesisResponse = await axios.get(`${process.env.POIESIS_API_ROUTE}/scroll-feed-and-reply`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${process.env.POIESIS_API_KEY}`
-                  }
-            }
-        )
+      console.log("inside the scroll feed and reply, the casted today is: ", castedToday)
+      const poiesisResponse = await axios.get(`${process.env.POIESIS_API_ROUTE}/scroll-feed-and-reply?totalCastedToday=${castedToday}`,
+          {
+              headers: {
+                  'Authorization': `Bearer ${process.env.POIESIS_API_KEY}`
+                }
+          }
+      )
+      console.log("the response from poiesis is ", poiesisResponse)
     } catch (error) {
         console.log("there was an error scrolling the feed and replying", error)
     }
