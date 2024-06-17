@@ -35,6 +35,7 @@ export const app = new Frog({
 app.use('/*', serveStatic({ root: './public' }))
 
 app.get('/', (c) => {
+  console.log("inside hereeeeee")
   return c.json({
     134:124
   })
@@ -43,7 +44,7 @@ app.get('/', (c) => {
 app.post("/jpfraneto-replied", async (c) => {
   console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
   const body = await c.req.text();
-  
+
   return
   const sig = c.req.header.get("X-Neynar-Signature");
   if (!sig) {
