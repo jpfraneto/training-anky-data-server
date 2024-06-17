@@ -43,8 +43,9 @@ app.get('/', (c) => {
 app.post("/jpfraneto-replied", async (c) => {
   console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
   const body = await c.req.text();
-
-  const sig = c.req.headers.get("X-Neynar-Signature");
+  
+  return
+  const sig = c.req.header.get("X-Neynar-Signature");
   if (!sig) {
     return c.text('Neynar signature missing from request headers', 400);
   }

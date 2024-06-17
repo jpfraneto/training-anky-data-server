@@ -43,7 +43,7 @@ export async function deleteAll() {
     }
 }
 
-export  async function getThisCastInformationFromHash (castHash) {
+export  async function getThisCastInformationFromHash (castHash: string) {
     try {
       const castResponse = await axios.get(`https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash&viewer_fid=16098`, {
         headers: {
@@ -57,7 +57,7 @@ export  async function getThisCastInformationFromHash (castHash) {
     }
   }
   
-  export  async function getThisCastInformationFromUrl (castUrl) {
+  export  async function getThisCastInformationFromUrl (castUrl : string) {
     try {
       const castResponse = await axios.get(`https://api.neynar.com/v2/farcaster/cast?identifier=${encodeURIComponent(castUrl)}&type=url&viewer_fid=16098`, {
         headers: {
@@ -66,7 +66,7 @@ export  async function getThisCastInformationFromHash (castHash) {
       })
       return castResponse.data.cast
     } catch (error) {
-      console.log("there was an error festing the cast from neynar", castHash)
+      console.log("there was an error festing the cast from neynar", castUrl)
     }
   }
 

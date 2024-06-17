@@ -24,7 +24,7 @@ export async function scrollFeedAndReply() {
     }
 }
 
-export async function getCompletionFromLocalLLM(systemPrompt, text, format = null) {
+export async function getCompletionFromLocalLLM(systemPrompt: string, text : string, format = null) {
   try {
     // Send a POST request to your local LLM server
     console.log("right before sending the completion to the local llm server");
@@ -56,7 +56,7 @@ export async function getCompletionFromLocalLLM(systemPrompt, text, format = nul
   }
 }
 
-export async function fetchCastInformation(castHash) {
+export async function fetchCastInformation(castHash: string) {
     try {
         const neynarResponse = await axios.get(
             `https://api.neynar.com/v2/farcaster/cast?identifier=${castHash}&type=hash&viewer_fid=16098`,
@@ -88,7 +88,7 @@ export async function fetchCastInformation(castHash) {
     }
 }
 
-export async function replyToThisCast(castHash, fullUrl = process.env.POIESIS_API_ROUTE , casterFid = 18350) {
+export async function replyToThisCast(castHash: string, fullUrl = process.env.POIESIS_API_ROUTE , casterFid = 18350) {
   try {
     const thisCastText = await fetchCastInformation(castHash);
 
@@ -139,7 +139,7 @@ export async function replyToThisCast(castHash, fullUrl = process.env.POIESIS_AP
   }
 }
 
-export async function castAnonymouslyWithFrame(text, irysReceiptHash = null, fullUrl, imageId = null) {
+export async function castAnonymouslyWithFrame(text: string, irysReceiptHash = null, fullUrl: string, imageId = null) {
     try {
         console.log('inside the cast anonymously with frame function');
         let embeds = [];
@@ -175,7 +175,7 @@ export async function castAnonymouslyWithFrame(text, irysReceiptHash = null, ful
       }
 }
 
-export async function processThisTextThroughAnky(text){
+export async function processThisTextThroughAnky(text : string){
   try {
     const systemPrompt = `Distill the essence of the text that you are receiving -which was written by a human as a stream of consciousness- and transform it into three things:
 
@@ -200,7 +200,7 @@ export async function processThisTextThroughAnky(text){
 }
 
 
-export async function getAnkyImage(prompt) {
+export async function getAnkyImage(prompt : string) {
   let response;
   try {
       console.log("inside the get anky image functon", prompt);
