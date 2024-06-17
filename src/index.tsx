@@ -43,6 +43,9 @@ app.get('/', (c) => {
 
 app.get("/jpfraneto-replied", async (c) => {
   console.log("inside the get route for jpfraneto replied")
+  return c.json({
+    134:124
+  }) 
 })
 
 app.post("/jpfraneto-replied", async (c) => {
