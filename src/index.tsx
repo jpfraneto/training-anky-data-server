@@ -13,7 +13,7 @@ import { createHmac } from "crypto";
 import crypto from 'crypto';
 import { checkAndUpdateRepliesScores } from '../lib/replyManager';
 import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
-import { scrollFeedAndReply, getOldRepliesAndProcessThem } from "../lib/anky"
+import { scrollFeedAndReply, getOldRepliesAndProcessThem, replyToThisCastFromChatgtp } from "../lib/anky"
 
 // deleteAll()
 // scrollFeedAndReply()
@@ -35,50 +35,41 @@ export const app = new Frog({
 
 app.use('/*', serveStatic({ root: './public' }))
 
-app.get('/', (c) => {
+app.get('/', (c) => { 
   console.log("inside hereeeeee")
   return c.json({
     134:124
   })
 })
 
-app.get("/jpfraneto-replied", async (c) => {
-  console.log("inside the get route for jpfraneto replied")
-  return c.json({
-    134:124
-  }) 
-})
-
 app.post("/jpfraneto-replied", async (c) => {
   console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
-  const body = await c.req.text();
+  const text = await c.req.text();
+  console.log("the boyd is: ", text)
+
+  const responseData = JSON.parse(text);
+  const castData = responseData.data
+  
+  const responseFromReplying = await replyToThisCastFromChatgtp(castData.parent_hash)
+  const parentCast = await getThisCastInformationFromHash(castData.parent_hash)
+
+  console.log("the response from replying is ", responseFromReplying)
+  // add reply to the database as a good / bad reply pair
+  const prismaResponse = await prisma.replyForTrainingAnky.create({
+    data: {
+      rootCastHash: castData.parent_hash,
+      rootCastText: parentCast.text,
+      goodReplyHash: castData.hash,
+      goodReplyText: castData.text,
+      badReplyHash: responseFromReplying.cast.hash,
+      badReplyText: responseFromReplying.cast.text
+    }
+  })
+  console.log("THE PRISMA RESPONSE IS", prismaResponse)
 
   return c.json({
     134:124
-  }) 
-  // const sig = c.req.header.get("X-Neynar-Signature");
-  // if (!sig) {
-  //   return c.text('Neynar signature missing from request headers', 400);
-  // }
-
-  // const webhookSecret = process.env.NEYNAR_WEBHOOK_SECRET;
-  // if (!webhookSecret) {
-  //   return c.text('Make sure you set NEYNAR_WEBHOOK_SECRET in your .env file', 500);
-  // }
-
-  // const hmac = createHmac('sha512', webhookSecret);
-  // hmac.update(body);
-
-  // const generatedSignature = hmac.digest('hex');
-
-  // const isValid = generatedSignature === sig;
-  // if (!isValid) {
-  //   return c.text('Invalid webhook signature', 401);
-  // }
-
-  // const hookData = JSON.parse(body);
-
-  console.log("INSIDE THE WEEBHOOK THAT WAS FIRED BECAUSE JPFRANETO REPLIED TO A CAST", c)
+  })
 })
 
 // for installing the cast action
