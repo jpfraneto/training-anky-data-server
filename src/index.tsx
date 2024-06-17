@@ -21,7 +21,7 @@ import { scrollFeedAndReply, getOldRepliesAndProcessThem, replyToThisCastFromCha
 
 cron.schedule('*/30 * * * *', () => {
   console.log("inside the scheduler function, time to scroll the feed and reply")
-  scrollFeedAndReply()
+  // scrollFeedAndReply()
   getOldRepliesAndProcessThem()
 });
 
