@@ -4,8 +4,6 @@ import { Cast } from './types/cast';
 import {getThisCastInformationFromHash } from "./farcaster"
 import OpenAI from "openai";
 
-console.log("process.env.OPENAI_API_KEY,", process.env.OPENAI_API_KEY,)
-
 const openai = new OpenAI({
   organization: "org-jky0txWAU8ZrAAF5d14VR12J",
   apiKey: process.env.OPENAI_API_KEY,

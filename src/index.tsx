@@ -27,8 +27,6 @@ cron.schedule('*/30 * * * *', () => {
 
 export const app = new Frog({
   basePath: '/',
-  imageAspectRatio: '1:1',
-  imageOptions: { width: 600, height: 600 },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
 })
