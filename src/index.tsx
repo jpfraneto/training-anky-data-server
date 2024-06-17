@@ -6,6 +6,7 @@ import { devtools } from 'frog/dev'
 import prisma from "../lib/prismaClient"
 import axios from 'axios'
 import cron from 'node-cron';
+import { Cast } from '../lib/types/cast';
 import { exec } from 'child_process';
 import { v4 as uuidv4 } from 'uuid';
 import { createHmac } from "crypto";
@@ -53,27 +54,27 @@ app.post("/jpfraneto-replied", async (c) => {
   const body = await c.req.text();
 
   return
-  const sig = c.req.header.get("X-Neynar-Signature");
-  if (!sig) {
-    return c.text('Neynar signature missing from request headers', 400);
-  }
+  // const sig = c.req.header.get("X-Neynar-Signature");
+  // if (!sig) {
+  //   return c.text('Neynar signature missing from request headers', 400);
+  // }
 
-  const webhookSecret = process.env.NEYNAR_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    return c.text('Make sure you set NEYNAR_WEBHOOK_SECRET in your .env file', 500);
-  }
+  // const webhookSecret = process.env.NEYNAR_WEBHOOK_SECRET;
+  // if (!webhookSecret) {
+  //   return c.text('Make sure you set NEYNAR_WEBHOOK_SECRET in your .env file', 500);
+  // }
 
-  const hmac = createHmac('sha512', webhookSecret);
-  hmac.update(body);
+  // const hmac = createHmac('sha512', webhookSecret);
+  // hmac.update(body);
 
-  const generatedSignature = hmac.digest('hex');
+  // const generatedSignature = hmac.digest('hex');
 
-  const isValid = generatedSignature === sig;
-  if (!isValid) {
-    return c.text('Invalid webhook signature', 401);
-  }
+  // const isValid = generatedSignature === sig;
+  // if (!isValid) {
+  //   return c.text('Invalid webhook signature', 401);
+  // }
 
-  const hookData = JSON.parse(body);
+  // const hookData = JSON.parse(body);
 
   console.log("INSIDE THE WEEBHOOK THAT WAS FIRED BECAUSE JPFRANETO REPLIED TO A CAST", c)
 })
@@ -193,7 +194,7 @@ app.frame('/save-this-reply-frame/:goodReplyHash', (c) => {
   })
 })
 
-async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
+async function storeOnDatabase (replyParentCast: Cast, goodReplyCast : Cast, badReplyCast : Cast) {
   try {
     const prismaResponse = await prisma.replyForTrainingAnky.create({
       data: {
@@ -211,7 +212,7 @@ async function storeOnDatabase (replyParentCast, goodReplyCast, badReplyCast) {
   }
 }
 
-async function getUsersRepliesDataForToday (fid) {
+async function getUsersRepliesDataForToday (fid: number) {
   try {
     // fetch this users replies data for today
     const usersData = {

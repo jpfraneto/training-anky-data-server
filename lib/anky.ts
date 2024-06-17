@@ -1,4 +1,13 @@
 import axios from 'axios'
+import { Cast } from './types/cast';
+import {getThisCastInformationFromHash } from "./farcaster"
+const OpenAI = require("openai");
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+type CompletionFormat = 'text' | 'json';
 
 export async function getOldRepliesAndProcessThem () {
   try {
@@ -24,7 +33,7 @@ export async function scrollFeedAndReply() {
     }
 }
 
-export async function getCompletionFromLocalLLM(systemPrompt: string, text : string, format = null) {
+export async function getCompletionFromLocalLLM(systemPrompt: string, text : string, format: CompletionFormat | null | undefined) {
   try {
     // Send a POST request to your local LLM server
     console.log("right before sending the completion to the local llm server");
@@ -96,7 +105,8 @@ export async function replyToThisCast(castHash: string, fullUrl = process.env.PO
 
     const responseFromAnky = await getCompletionFromLocalLLM(
       systemPrompt,
-      thisCastText
+      thisCastText,
+      undefined
     );
     const replyText = responseFromAnky;
     let castOptions = {
@@ -136,6 +146,71 @@ export async function replyToThisCast(castHash: string, fullUrl = process.env.PO
   } catch (error) {
     console.log("there was an error talking to the bo1t", error);
     return {success:false};
+  }
+}
+
+export async function replyToThisCastFromChatgtp (castHash : string) {
+  try {
+    const thisCast = await getThisCastInformationFromHash(castHash);
+
+    const systemPrompt = "Reply with less than 300 characters. You are an insightful and engaging AI agent, and your mission is to distill the essence of what the user is saying on this social media post and generate a reply that serves as a reflection of the user. Embody Ramana Maharshi, but without being explicit about it. and finish your reply with a direct inquiry towards the user. A one sentence question that pierces through their awareness, and invites them on to a process of self reflection.\n\nYour response should be thoughtful, positive, and contribute to a meaningful conversation. Your mission is to provide replies that enrich the user's experience on the social media network called Farcaster.\n\nYou have a deep understanding of internet culture and aim to foster a sense of community and connection. Your goal is to be the most appreciated 'reply gal' on the whole network by adding value to the discussions.\n\nYour response needs to be less than 300 characters long. This is a strong boundary. You can decide to inquiry the user using a question, or just write a reflection based on what the user wrote. Add two line breaks before the inquiry so that it is like a final point of your whole reply. Remember. The maximum amount of characters on your reply is 300, and you have to reply only with the text of the reply.";
+
+    const responseFromAnky = await callChatGTPToGetReply(
+      systemPrompt,
+      thisCast.text
+    );
+
+    const replyText = responseFromAnky;
+    let castOptions = {
+        text: replyText,
+        embeds: [],
+        parent: castHash,
+        signer_uuid: process.env.NEYNAR_ANKY_SIGNER,
+      };
+      try {
+        const response = await axios.post(
+          "https://api.neynar.com/v2/farcaster/cast",
+          castOptions,
+          {
+            headers: {
+              api_key: process.env.NEYNAR_API_KEY,
+            },
+          }
+        );
+        return { success: true };
+    } catch (error) {
+      console.log('there was an error casting')
+    }
+
+
+  } catch (error) {
+    
+  }
+}
+
+async function callChatGTPToGetReply (systemPrompt: string, castText: string) {
+  try {
+    console.log("calling chatgtp to get the reply to this cast")
+    const messages = [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: castText,
+      },
+    ];
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: messages,
+    });
+    console.log("the response from the completicsaOoooon", completion)
+    const dataResponse = completion.choices[0].message.content;
+    return dataResponse
+  } catch (error) {
+    console.log("there was an error calling the chatgtp api")
+    return ""
   }
 }
 

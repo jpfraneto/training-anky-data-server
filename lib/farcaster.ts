@@ -1,5 +1,7 @@
 import axios from 'axios'
 import 'dotenv/config'
+import { Cast } from './types/cast';
+
 
 export async function deleteAll() {
     console.log("inside the delete all function")
@@ -13,7 +15,7 @@ export async function deleteAll() {
           }
         )
         console.log("there are ", castResponse.data.casts.length)
-        castResponse.data.casts.forEach(async (cast) => {
+        castResponse.data.casts.forEach(async (cast : Cast) => {
             if(cast.reactions.likes_count == 0 && cast.reactions.recasts_count == 0 && cast.replies.count == 0) {
                 const options = {
                     method: 'DELETE',

@@ -15,10 +15,13 @@
     "frog": "latest",
     "hono": "^4",
     "node-cron": "^3.0.3",
+    "openai": "^4.51.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "@types/node-cron": "^3.0.11",
+    "@types/uuid": "^9.0.8",
     "prisma": "^5.15.0",
     "tsx": "^3.12.2"
   }
