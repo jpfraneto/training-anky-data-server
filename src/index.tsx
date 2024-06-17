@@ -16,8 +16,8 @@ import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAl
 import { scrollFeedAndReply, getOldRepliesAndProcessThem, replyToThisCastFromChatgtp } from "../lib/anky"
 
 // deleteAll()
- // scrollFeedAndReply()
-checkAndUpdateRepliesScores()
+scrollFeedAndReply()
+// checkAndUpdateRepliesScores()
 
 cron.schedule('*/30 * * * *', () => {
   scrollFeedAndReply()
