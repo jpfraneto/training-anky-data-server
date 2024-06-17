@@ -7,6 +7,7 @@ import OpenAI from "openai";
 console.log("process.env.OPENAI_API_KEY,", process.env.OPENAI_API_KEY,)
 
 const openai = new OpenAI({
+  organization: "org-jky0txWAU8ZrAAF5d14VR12J",
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -22,7 +23,6 @@ export async function getOldRepliesAndProcessThem () {
 
 export async function scrollFeedAndReply() {
     try {
-        console.log("gonna do some scrolling rn");
         const poiesisResponse = await axios.get(`${process.env.POIESIS_API_ROUTE}/scroll-feed-and-reply`,
             {
                 headers: {
@@ -30,7 +30,6 @@ export async function scrollFeedAndReply() {
                   }
             }
         )
-        console.log("the response from poiesis is: ", poiesisResponse)
     } catch (error) {
         console.log("there was an error scrolling the feed and replying", error)
     }
@@ -39,7 +38,6 @@ export async function scrollFeedAndReply() {
 export async function getCompletionFromLocalLLM(systemPrompt: string, text : string, format: CompletionFormat | null | undefined) {
   try {
     // Send a POST request to your local LLM server
-    console.log("right before sending the completion to the local llm server");
     const response = await axios.post(
       "http://localhost:11434/api/chat",
       {
@@ -58,7 +56,6 @@ export async function getCompletionFromLocalLLM(systemPrompt: string, text : str
         "format": format
       },
     );
-    console.log("the response from the local llm is: ", response.data);
     const responseFromAnky = response.data.message.content;
     return responseFromAnky;
   } catch (error) {
@@ -194,19 +191,18 @@ export async function replyToThisCastFromChatgtp (castHash : string) {
 async function callChatGTPToGetReply (systemPrompt: string, castText: string) {
   try {
     console.log("calling chatgtp to get the reply to this cast")
-    const messages = [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: castText,
-      },
-    ];
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      messages: messages,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: castText,
+        },
+      ],
     });
     console.log("the response from the completicsaOoooon", completion)
     const dataResponse = completion.choices[0].message.content;

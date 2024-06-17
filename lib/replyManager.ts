@@ -1,6 +1,6 @@
 import prisma from "./prismaClient";
 import { getThisCastInformationFromHash } from "../lib/farcaster"
-import { replyToThisCast, castAnonymouslyWithFrame, getAnkyImage, processThisTextThroughAnky } from "./lib/anky";
+// import { replyToThisCast, castAnonymouslyWithFrame, getAnkyImage, processThisTextThroughAnky } from "./lib/anky";
 
 
 
@@ -28,7 +28,7 @@ export async function checkAndUpdateRepliesScores() {
     });
     for (const reply of todayReplies) {
         // Fetch cast data by hash
-        const castData = await getThisCastInformationFromHash(reply && reply?.replyCastHash);
+        const castData = await getThisCastInformationFromHash(reply?.replyCastHash ?? "");
 
 
         if (castData && castData.cast) {
