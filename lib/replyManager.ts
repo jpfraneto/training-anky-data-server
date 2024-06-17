@@ -4,35 +4,33 @@ import { getThisCastInformationFromHash } from "../lib/farcaster"
 
 
 
-// Utility function to get the start of the day
-function getStartOfDay() {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    return now;
-}
-
+function getStartOfDay(timestamp: number): number {
+    const startTimestamp = 1711861200 * 1000; // Convert to milliseconds
+    const startDate = new Date(startTimestamp);
+  
+    const timeDifference = timestamp - startDate.getTime(); // Difference in milliseconds
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+  
+    return daysDifference;
+  }
 // Function to check and update replies scores
 export async function checkAndUpdateRepliesScores() {
-
     const eightHoursAgo = new Date(Date.now() - 8 * 60 * 60 * 1000);
-    const startOfDay = getStartOfDay();
 
     // Fetch today's replies
     const todayReplies = await prisma.replyFromAnky.findMany({
         where: {
             scheduledAt: {
-                gte: startOfDay
+                gte: eightHoursAgo
             },
             deleted: false
         }
     });
     for (const reply of todayReplies) {
         // Fetch cast data by hash
-        const castData = await getThisCastInformationFromHash(reply?.replyCastHash ?? "");
-
+        const castData = await getThisCastInformationFromHash(reply.replyCastHash ?? "");
 
         if (castData && castData.cast) {
-
             if (reply.timeOfReply && reply.timeOfReply > eightHoursAgo &&
                 castData.quoteCasts === 0 && castData.recasts === 0 &&
                 castData.comments === 0 && castData.likes === 0) {
@@ -40,13 +38,12 @@ export async function checkAndUpdateRepliesScores() {
                 const response = await axios.delete(`https://api.neynar.com/v2/farcaster/cast`, {
                     signer_uuid: process.env.ANKY_SIGNER_UUID,
                     target_hash: reply.replyCastHash
-                  },
-                  {
+                },
+                {
                     headers: {
-                      api_key: process.env.NEYNAR_API_KEY,
+                    api_key: process.env.NEYNAR_API_KEY,
                     }
-                  }) 
-                console.log("the response from deleting this cast is successful")
+                }) 
                 if(response.status) {
                     await prisma.replyFromAnky.update({
                         where: {

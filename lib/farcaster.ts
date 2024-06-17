@@ -14,7 +14,6 @@ export async function deleteAll() {
             }
           }
         )
-        console.log("there are ", castResponse.data.casts.length)
         castResponse.data.casts.forEach(async (cast : Cast) => {
             if(cast.reactions.likes_count == 0 && cast.reactions.recasts_count == 0 && cast.replies.count == 0) {
                 const options = {
@@ -56,6 +55,7 @@ export  async function getThisCastInformationFromHash (castHash: string) {
       return castResponse.data.cast
     } catch (error) {
       console.log("there was an error festing the cast from neynar", error)
+      return {}
     }
   }
   

@@ -16,13 +16,13 @@ import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAl
 import { scrollFeedAndReply, getOldRepliesAndProcessThem, replyToThisCastFromChatgtp } from "../lib/anky"
 
 // deleteAll()
-// scrollFeedAndReply()
-
+ // scrollFeedAndReply()
+checkAndUpdateRepliesScores()
 
 cron.schedule('*/30 * * * *', () => {
-  console.log("inside the scheduler function, time to scroll the feed and reply")
-  // scrollFeedAndReply()
-  getOldRepliesAndProcessThem()
+  scrollFeedAndReply()
+  checkAndUpdateRepliesScores()
+  // getOldRepliesAndProcessThem()
 });
 
 export const app = new Frog({
