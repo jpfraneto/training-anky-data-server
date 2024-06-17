@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Cast } from './types/cast';
 import {getThisCastInformationFromHash } from "./farcaster"
-const OpenAI = require("openai");
+import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
