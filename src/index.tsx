@@ -41,6 +41,10 @@ app.get('/', (c) => {
   })
 })
 
+app.get("/jpfraneto-replied", async (c) => {
+  console.log("inside the get route for jpfraneto replied")
+})
+
 app.post("/jpfraneto-replied", async (c) => {
   console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
   const body = await c.req.text();
