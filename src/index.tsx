@@ -11,13 +11,14 @@ import { exec } from 'child_process';
 import { v4 as uuidv4 } from 'uuid';
 import { createHmac } from "crypto";
 import crypto from 'crypto';
-import { checkAndUpdateRepliesScores } from '../lib/replyManager';
+import { checkAndUpdateRepliesScores, downloadAllTrainingDataForToday } from '../lib/replyManager';
 import { getThisCastInformationFromHash, getThisCastInformationFromUrl, deleteAll } from "../lib/farcaster"
 import { scrollFeedAndReply, getOldRepliesAndProcessThem, replyToThisCastFromChatgtp } from "../lib/anky"
 
 // deleteAll()
 scrollFeedAndReply()
 // checkAndUpdateRepliesScores()
+// downloadAllTrainingDataForToday()
 
 cron.schedule('*/30 * * * *', () => {
   scrollFeedAndReply()
@@ -25,10 +26,20 @@ cron.schedule('*/30 * * * *', () => {
   // getOldRepliesAndProcessThem()
 });
 
+
 export const app = new Frog({
   basePath: '/',
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
+  imageOptions: {
+    /* Other default options */
+    fonts: [
+      {
+        name: 'Righteous',
+        source: 'google',
+      },
+    ],
+  },
 })
 
 app.use('/*', serveStatic({ root: './public' }))
@@ -41,34 +52,37 @@ app.get('/', (c) => {
 })
 
 app.post("/jpfraneto-replied", async (c) => {
-  console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
-  const text = await c.req.text();
-  console.log("the boyd is: ", text)
-
-  const responseData = JSON.parse(text);
-  const castData = responseData.data
+  try {
+    console.log("INSIDE THE JPFRANETO CASTED WEBHOOK ", c)
+    const text = await c.req.text();
+    console.log("the boyd is: ", text)
   
-  const responseFromReplying = await replyToThisCastFromChatgtp(castData.parent_hash)
-  const parentCast = await getThisCastInformationFromHash(castData.parent_hash)
-
-  console.log("the response from replying is ", responseFromReplying)
-  // add reply to the database as a good / bad reply pair
-  const prismaResponse = await prisma.replyForTrainingAnky.create({
-    data: {
-      rootCastHash: castData.parent_hash,
-      rootCastText: parentCast.text,
-      goodReplyHash: castData.hash,
-      goodReplyText: castData.text,
-      badReplyHash: responseFromReplying.cast.hash,
-      badReplyText: responseFromReplying.cast.text
-    }
-  })
-  console.log("THE PRISMA RESPONSE IS", prismaResponse)
-
-  return c.json({
-    134:124
-  })
+    const responseData = JSON.parse(text);
+    const castData = responseData.data
+    
+    const responseFromReplying = await replyToThisCastFromChatgtp(castData.parent_hash)
+    const parentCast = await getThisCastInformationFromHash(castData.parent_hash)
+  
+    console.log("the response from replying is ", responseFromReplying)
+    // add reply to the database as a good / bad reply pair
+    const prismaResponse = await prisma.replyForTrainingAnky.create({
+      data: {
+        rootCastHash: castData.parent_hash,
+        rootCastText: parentCast.text,
+        goodReplyHash: castData.hash,
+        goodReplyText: castData.text,
+        badReplyHash: responseFromReplying.cast.hash,
+        badReplyText: responseFromReplying.cast.text
+      }
+    })  
+    return c.json({
+      134:124
+    })
+  } catch (error) {
+    console.log("THERE WAS AN ERROR ON THE JPFRANETO REPLIED ROUTE")
+  }
 })
+
 
 // for installing the cast action
 app.frame('/install-save-this-reply', (c) => {
