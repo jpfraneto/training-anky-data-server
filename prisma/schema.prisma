@@ -19,7 +19,7 @@ model ReplyFromAnky {
     timeOfReply           DateTime?
     replyText             String?
     replyReasoning        String?
-    replyCastHash         String?
+    replyCastHash         String?     @id              @unique
     humanTrainerFeedback  String?
     quoteCasts            Int         @default(0)
     recasts               Int         @default(0)
